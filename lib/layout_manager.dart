@@ -317,5 +317,7 @@ class LayoutManager {
           ),
         );
     }
+
+    return rootNavigation.call();
   }
 }
