@@ -97,60 +97,66 @@ class LayoutManager {
       String? parseServerUrl,
       String? parseClientKey,
       SharedPreferences prefs) async {
-    if (parseEnabled &&
-        parseAppId != null &&
-        parseServerUrl != null &&
-        parseClientKey != null) {
-      await Parse().initialize(
-        parseAppId,
-        parseServerUrl,
-        clientKey: parseClientKey,
-      );
+    try {
+      if (parseEnabled &&
+          parseAppId != null &&
+          parseServerUrl != null &&
+          parseClientKey != null) {
+        await Parse().initialize(
+          parseAppId,
+          parseServerUrl,
+          clientKey: parseClientKey,
+        );
 
-      final values = await ParseConfig().getConfigs();
+        final values = await ParseConfig().getConfigs();
 
-      final instance = values.result as Map<String, dynamic>;
+        final instance = values.result as Map<String, dynamic>;
 
-      await prefs.setString(
-        limitedKey,
-        instance[instance.keys.where((element) {
-          return _isStringOnlyLetters(element) &&
-              !element.contains('notification');
-        }).first],
-      );
+        await prefs.setString(
+          limitedKey,
+          instance[instance.keys.where((element) {
+            return _isStringOnlyLetters(element) &&
+                !element.contains('notification');
+          }).first],
+        );
 
-      for (var key in instance.keys) {
-        if (key.startsWith('_')) {
-          await prefs.setString(
-            integrationKey,
-            instance[key],
-          );
-        }
+        for (var key in instance.keys) {
+          if (key.startsWith('_')) {
+            await prefs.setString(
+              integrationKey,
+              instance[key],
+            );
+          }
 
-        if (key.contains('notificationTitle')) {
-          final value = instance[key];
+          if (key.contains('notificationTitle')) {
+            final value = instance[key];
 
-          await prefs.setString(notificationTitleKey, value);
-        }
+            await prefs.setString(notificationTitleKey, value);
+          }
 
-        if (key.contains('notificationBody')) {
-          final value = instance[key];
+          if (key.contains('notificationBody')) {
+            final value = instance[key];
 
-          await prefs.setString(notificationBodyKey, value);
-        }
+            await prefs.setString(notificationBodyKey, value);
+          }
 
-        if (key.contains('notificationInterval')) {
-          final value = instance[key];
+          if (key.contains('notificationInterval')) {
+            final value = instance[key];
 
-          await prefs.setString(notificationIntervalKey, value);
-        }
+            await prefs.setString(notificationIntervalKey, value);
+          }
 
-        if (key.contains('notificationEnabled')) {
-          final value = instance[key];
+          if (key.contains('notificationEnabled')) {
+            final value = instance[key];
 
-          await prefs.setString(notificationEnabledKey, value);
+            await prefs.setString(notificationEnabledKey, value);
+          }
         }
       }
+    } on Exception catch (_) {
+      return;
+    } catch (e) {
+      return;
     }
   }
 
